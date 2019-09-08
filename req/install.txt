@@ -1,0 +1,2 @@
+-e git+https://github.com/blackearth/datamodels.git@fd6059109f2407c578dc6858b4d4c21a4069e6cb#egg=datamodels
+-e git+https://github.com/BlackEarth/sqly.git@ccd03120f4c29a8b80937898bfbb5fffdec3cd7d#egg=sqly

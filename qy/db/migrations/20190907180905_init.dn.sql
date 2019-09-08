@@ -1,0 +1,2 @@
+DROP TABLE qy.queue;
+DROP SCHEMA IF EXISTS qy;
