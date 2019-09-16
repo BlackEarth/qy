@@ -7,6 +7,7 @@ from sqly.lib import run
 
 @dataclass
 class Job(Model):
+    TABLE = 'qy_jobs'
     PK = ['id']
 
     id: int = field(default=None)
@@ -20,24 +21,23 @@ class Job(Model):
 class Queue(Model):
     dialect: Dialects
 
-    def put(self, conn, job):
+    def put(self, data, retries=3, scheduled=None):
         query = SQL(
             """
-            INSERT INTO qy_queue ({fields}) values ({params})
+            INSERT INTO qy_jobs ({fields}) values ({params})
             RETURNING *
             """,
             dialect=self.dialect,
         )
-        sql, values = query.render({k: v for k, v in job.items() if v})
-        row = run(conn.fetchrow(sql, *values))
-        return Job.from_data(row)
+        job = Job(data=data, retries=retries, scheduled=scheduled)
+        return query.render(job.dict(nulls=False))
 
-    def get(self, conn):
+    def get(self):
         query = SQL(
             """
-            UPDATE qy_queue q1 SET retries = retries - 1
+            UPDATE qy_jobs q1 SET retries = retries - 1
             WHERE q1.id = ( 
-                SELECT q2.id FROM qy_queue q2 
+                SELECT q2.id FROM qy_jobs q2 
                 WHERE q2.retries > 0
                 AND q2.scheduled <= now()
                 ORDER BY q2.created FOR UPDATE SKIP LOCKED LIMIT 1 
@@ -46,16 +46,13 @@ class Queue(Model):
             """.rstrip(),
             dialect=self.dialect,
         )
-        sql = str(query)
-        row = run(conn.fetchrow(sql))
-        return Job.from_data(row)
+        return str(query)
 
-    def delete(self, conn, job):
+    def delete(self, job):
         query = SQL(
             """
-            DELETE FROM qy_queue WHERE id=:id
+            DELETE FROM qy_jobs WHERE id=:id
             """.rstrip(),
             dialect=self.dialect,
         )
-        sql, values = query.render({'id': job.id})
-        run(conn.execute(sql, *values))
+        return query.render({'id': job.id})
