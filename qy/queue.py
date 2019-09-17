@@ -12,7 +12,7 @@ class Job(Model):
 
     id: int = field(default=None)
     retries: int = field(default=3)
-    created: datetime = field(default=None)
+    queued: datetime = field(default=None)
     scheduled: datetime = field(default=None)
     data: dict = field(default_factory=dict)
 
