@@ -39,7 +39,7 @@ class Queue(Model):
             UPDATE qy_jobs q1 SET retries = retries - 1
             WHERE q1.id = ( 
                 SELECT q2.id FROM qy_jobs q2 
-                WHERE q2.qname={qname} 
+                WHERE q2.qname=:qname
                 AND q2.retries > 0
                 AND q2.scheduled <= now()
                 ORDER BY q2.created 
@@ -48,7 +48,7 @@ class Queue(Model):
             RETURNING q1.*;
             """.rstrip()
         )
-        return query.render(qname=self.qname)[0]
+        return query.render({'qname': self.qname})
 
     def delete(self, job):
         query = SQL(self.dialect).query(
