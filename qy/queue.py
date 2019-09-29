@@ -20,20 +20,20 @@ class Job(Model):
 
 @dataclass
 class Queue(Model):
+    qname: str
     dialect: Dialects
 
-    def put(self, qname, data, retries=3, scheduled=None):
+    def put(self, data, retries=3, scheduled=None):
         query = SQL(self.dialect).query(
             """
             INSERT INTO qy_jobs ({fields}) values ({params})
             RETURNING *
-            """,
-            dialect=self.dialect,
+            """
         )
-        job = Job(qname=qname, data=data, retries=retries, scheduled=scheduled)
+        job = Job(qname=self.qname, data=data, retries=retries, scheduled=scheduled)
         return query.render(job.dict(nulls=False))
 
-    def get(self, qname):
+    def get(self):
         query = SQL(self.dialect).query(
             """
             UPDATE qy_jobs q1 SET retries = retries - 1
@@ -42,13 +42,13 @@ class Queue(Model):
                 WHERE q2.qname={qname} 
                 AND q2.retries > 0
                 AND q2.scheduled <= now()
-                ORDER BY q2.created FOR UPDATE SKIP LOCKED LIMIT 1 
+                ORDER BY q2.created 
+                FOR UPDATE SKIP LOCKED LIMIT 1 
             )
             RETURNING q1.*;
-            """.rstrip(),
-            dialect=self.dialect,
+            """.rstrip()
         )
-        return query.render(qname=qname)[0]
+        return query.render(qname=self.qname)[0]
 
     def delete(self, job):
         query = SQL(self.dialect).query(
