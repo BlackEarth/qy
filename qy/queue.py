@@ -1,9 +1,12 @@
+import json
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from datamodels import Model
 from sqly import SQL, Query, Dialects
 from sqly.lib import run
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Job(Model):
@@ -17,11 +20,21 @@ class Job(Model):
     scheduled: datetime = field(default=None)
     data: dict = field(default_factory=dict)
 
+    class CONVERTERS:
+        def data(value):
+            if isinstance(value, str):
+                return json.loads(value)
+            else: 
+                return value
+
 
 @dataclass
 class Queue(Model):
     qname: str
     dialect: Dialects
+
+    def __post_init__(self):
+        logger.info('Queue initialized: %r' % self)
 
     def put(self, data, retries=3, scheduled=None):
         query = SQL(self.dialect).query(
@@ -42,7 +55,7 @@ class Queue(Model):
                 WHERE q2.qname=:qname
                 AND q2.retries > 0
                 AND q2.scheduled <= now()
-                ORDER BY q2.created 
+                ORDER BY q2.queued 
                 FOR UPDATE SKIP LOCKED LIMIT 1 
             )
             RETURNING q1.*;
