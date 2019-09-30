@@ -1,7 +1,7 @@
 {
   "name": "qy",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.2.0",
+  "description": "An asyncpg-based queue library for python",
   "url": "https://gitlab.com/blackearth/qy",
   "author": "Sean Harrison",
   "author_email": "sah@bookgenesis.com",
@@ -13,7 +13,7 @@
     "Programming Language :: Python :: 3"
   ],
   "entry_points": {},
-  "install_requires": [],
+  "install_requires": ["sqly==0.4.0"],
   "extras_require": {
     "dev": [],
     "test": []
