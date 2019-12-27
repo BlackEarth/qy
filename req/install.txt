@@ -1,2 +1,2 @@
-datamodels==0.8.1
+datamodels==0.8.2
 sqly=0.4.1
