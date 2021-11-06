@@ -1,2 +1,2 @@
-datamodels==0.8.2
-sqly==0.4.5
+-e git+https://github.com/BlackEarth/sqly.git@ddb1d8f98e5c2be4ac31de18a6e676a1f67cc25b#egg=sqly
+pydantic==1.8.2

@@ -1,5 +1,5 @@
 #!/bin/bash
-PATHS="apps libs smh_app"
+PATHS="qy"
 isort -q -rc $PATHS
 black -q $PATHS
 flake8

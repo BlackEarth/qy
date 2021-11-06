@@ -1,2 +1,2 @@
 -r install.txt
-flake8==3.7.8
+flake8==4.0.1
