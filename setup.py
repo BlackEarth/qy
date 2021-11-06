@@ -23,8 +23,9 @@ def req_from_file(filename):
 if __name__ == '__main__':
     setup(
         long_description=README,
+        long_description_content_type='text/markdown',
         packages=find_packages(),
         include_package_data=True,
-        install_requires=req_from_file(os.path.join(PATH, 'req/install.txt')),
+        # install_requires=req_from_file(os.path.join(PATH, 'req/install.txt')),
         **CONFIG
     )
