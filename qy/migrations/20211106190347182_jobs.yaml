@@ -1,0 +1,22 @@
+id: 20211106190347182
+app: qy
+name: jobs
+depends:
+- sqly:20211105034808482_init
+applied: null
+doc: >
+  See <https://tnishimura.github.io/articles/queues-in-postgresql/>
+up: >
+  CREATE TABLE qy_jobs (
+      id              BIGSERIAL PRIMARY KEY,
+      qname           VARCHAR NOT NULL,
+      retries         INTEGER NOT NULL DEFAULT 3,
+      queued          TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+      scheduled       TIMESTAMPTZ NOT NULL DEFAULT current_timestamp,
+      data            JSONB NOT NULL DEFAULT '{}'
+  );
+  CREATE INDEX qy_jobs_queued ON qy_jobs(queued);
+  CREATE INDEX qy_jobs_qname ON qy_jobs(qname);
+  CREATE INDEX qy_jobs_retries ON qy_jobs(retries);
+
+dn: DROP TABLE qy_jobs CASCADE;
