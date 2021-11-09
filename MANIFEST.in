@@ -1,4 +1,4 @@
 include setup.json
 include README.md
-graft qy/db
+graft qy/migrations
 graft req
