@@ -1,2 +1,2 @@
--e git+https://github.com/BlackEarth/sqly.git@5fa7335ed5d08d62c19fc2510e6c22beb23b3f22#egg=sqly
+-e git+https://github.com/BlackEarth/sqly.git@e32fa6dc8d7daf18c4e0d372635da485cce7d774#egg=sqly
 pydantic==1.8.2
