@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 
 from pydantic import BaseModel, Field
-from sqly.dialect import Dialect
+from sqly import Dialect, Query
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +25,14 @@ class Queue(BaseModel):
 
     def put(self, data, retries=3, scheduled=None):
         job = Job(qname=self.qname, data=data, retries=retries, scheduled=scheduled)
+        job_data = job.dict(exclude_none=True)
         return self.dialect.render(
-            """
-            INSERT INTO qy_jobs (qname, retries, scheduled, data) 
-            VALUES (:qname, :retries, :scheduled, :data)
+            f"""
+            INSERT INTO qy_jobs ({Query.fields(job_data)}) 
+            VALUES ({Query.params(job_data)})
             RETURNING *
             """,
-            job.dict(),
+            job_data,
         )
 
     def get(self):
